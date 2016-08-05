@@ -1,0 +1,2 @@
+include ':app', ':BitmapView'
+project(':BitmapView').projectDir = new File('../BitmapView/bitmapview')
