@@ -7,7 +7,7 @@ Android library, display any resolution JPG PNG pictures, support rotate gesture
 - rotate
 - use BitmapRegionDecoder to support any resolution JPG/PNG
 
-# Gradle Dependency
+## Gradle Dependency
 ```gradle
 dependencies {
     compile 'org.qiibeta.views:bitmapview:1.0.0'
