@@ -19,6 +19,17 @@ see sample
 ## Sample Usage
 ```java
 
+public class YourApplication extends Application {
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        TileImage.clearBitmapRecyclePool();
+    }
+}
+
+```
+```java
+
 @Override
 public void onCreate(Bundle savedInstanceState) {
   super.onCreate(savedInstanceState);
