@@ -1,8 +1,6 @@
 package org.qiibeta.bitmapview;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.TimeAnimator;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -15,6 +13,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.OverScroller;
 
 import org.qiibeta.bitmapview.gesture.AppGestureDetector;
+import org.qiibeta.bitmapview.utility.AppTimeAnimator;
 import org.qiibeta.bitmapview.utility.DimenUtility;
 import org.qiibeta.bitmapview.utility.MatrixUtility;
 
@@ -41,7 +40,7 @@ public class GestureBitmapView extends BitmapView {
 
     private AppGestureDetector mGestureDetector;
 
-    private TimeAnimator mFlingAnimator;//can be interrupted
+    private AppTimeAnimator mFlingAnimator;//can be interrupted
     private Animator mRestoreAnimator;//can be interrupted
     private Animator mSwitchBaseMatrixAnimator;//can not be interrupted
 
@@ -238,7 +237,7 @@ public class GestureBitmapView extends BitmapView {
             log("onFling");
 
             if (mRestoreAnimator != null) {
-                log("RestoreAnimator 在执行,放弃Fling动画");
+                log("RestoreAnimator is executing, skip FlingAnimator");
                 return false;
             }
 
@@ -246,18 +245,6 @@ public class GestureBitmapView extends BitmapView {
 
             final RectF currentRect = new RectF(0, 0, getImageWidth(), getImageHeight());
             getCurrentDrawMatrix().mapRect(currentRect);
-            final float cxDraw = currentRect.width();
-            final float cyDraw = currentRect.height();
-            final float cxView = getWidth();
-            final float cyView = getHeight();
-            final int scrollRangeX = (int) Math.max(cxDraw - cxView, 0); //算出能移动最大距离
-            final int scrollRangeY = (int) Math.max(cyDraw - cyView, 0);
-
-//			if (scrollRangeX == 0 && scrollRangeY == 0) {
-//				return false;
-//			}
-
-//            Log.e("onfling", "" + Math.signum(velocityX));
 
             int minX = 0;
             int maxX = 0;
@@ -286,19 +273,22 @@ public class GestureBitmapView extends BitmapView {
             }
 
             scroller.fling(0, 0, (int) velocityX / 2, (int) velocityY / 2, minX, maxX, minY, maxY, 0, 0);
+            log("onFlingAnimator final position:" + scroller.getFinalY());
 
-            mFlingAnimator = new TimeAnimator();
-            mFlingAnimator.setTimeListener(new TimeAnimator.TimeListener() {
+            mFlingAnimator = new AppTimeAnimator(GestureBitmapView.this);
+            mFlingAnimator.setListener(new AppTimeAnimator.AnimatorListener() {
                 int previousX = 0;
                 int previousY = 0;
+                boolean isCanceled = false;
 
                 @Override
-                public void onTimeUpdate(TimeAnimator animation, long totalTime, long deltaTime) {
+                public void onAnimationUpdate(AppTimeAnimator animation) {
+                    super.onAnimationUpdate(animation);
                     if (!scroller.isFinished()) {
                         scroller.computeScrollOffset();
                         int x = scroller.getCurrX();
                         int y = scroller.getCurrY();
-                        Log.e("x", "value=" + x);
+//                        Log.e("x", "value=" + x);
                         if (previousX != 0 || previousY != 0) {
                             translate(x - previousX, y - previousY);
                             invalidateDraw();
@@ -310,31 +300,25 @@ public class GestureBitmapView extends BitmapView {
                         previousX = 0;
                         previousY = 0;
                         if (mFlingAnimator != null) {
-                            Log.e("end", "" + mFlingAnimator.getCurrentPlayTime() + "/" + mFlingAnimator.getDuration());
                             mFlingAnimator.end();
                         }
                     }
                 }
-            });
-
-            log("onFling 最终值:" + scroller.getFinalY());
-            mFlingAnimator.addListener(new AnimatorListenerAdapter() {
-                boolean isCanceled = false;
 
                 @Override
-                public void onAnimationCancel(Animator animation) {
+                public void onAnimationCancel(AppTimeAnimator animation) {
                     super.onAnimationCancel(animation);
                     isCanceled = true;
                 }
 
                 @Override
-                public void onAnimationEnd(Animator animation) {
+                public void onAnimationEnd(AppTimeAnimator animation) {
                     super.onAnimationEnd(animation);
                     mFlingAnimator = null;
                     if (isCanceled) {
-                        log("onFling 动画取消");
+                        log("onFlingAnimator is canceled");
                     } else {
-                        log("onFling 动画完成");
+                        log("onFlingAnimator is finished");
                     }
                     restoreToBaseMatrix(-1, -1);
                 }
