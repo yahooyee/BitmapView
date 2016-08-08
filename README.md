@@ -14,7 +14,7 @@ dependencies {
 }
 ```
 ## Sample Application
-see sample
+see sample, download sample.apk
 
 ## Sample Usage
 ```java
