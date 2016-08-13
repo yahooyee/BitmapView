@@ -272,7 +272,7 @@ public class GestureBitmapView extends BitmapView {
                 return false;
             }
 
-            scroller.fling(0, 0, (int) velocityX / 2, (int) velocityY / 2, minX, maxX, minY, maxY, 0, 0);
+            scroller.fling(0, 0, (int) velocityX, (int) velocityY, minX, maxX, minY, maxY, 0, 0);
             log("onFlingAnimator final position:" + scroller.getFinalY());
 
             mFlingAnimator = new AppTimeAnimator(GestureBitmapView.this);
