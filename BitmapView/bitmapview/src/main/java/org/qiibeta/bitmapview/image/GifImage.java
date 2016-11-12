@@ -7,6 +7,8 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.util.Log;
 
+import java.io.DataInputStream;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 
 //gif must be smaller than 1MB 1024*1024
@@ -18,6 +20,21 @@ public class GifImage extends AppImage {
             byte[] b = new byte[(int) file.length()];
             file.readFully(b);
             image.mGifDecoder = new GifDecoder(b);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        image.mBitmap = bitmap;
+        return image;
+    }
+
+    public static GifImage newInstance(Bitmap bitmap, InputStream inputStream) {
+        final GifImage image = new GifImage();
+        try {
+            byte[] imgDataBa = new byte[inputStream.available()];
+            DataInputStream dataIs = new DataInputStream(inputStream);
+            dataIs.readFully(imgDataBa);
+            image.mGifDecoder = new GifDecoder(imgDataBa);
         } catch (Exception e) {
             e.printStackTrace();
         }

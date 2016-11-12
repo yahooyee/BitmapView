@@ -6,14 +6,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
-import android.media.ExifInterface;
 import android.net.Uri;
 
 import org.qiibeta.bitmapview.image.AppImage;
 import org.qiibeta.bitmapview.image.BitmapImage;
 import org.qiibeta.bitmapview.image.GifImage;
 import org.qiibeta.bitmapview.image.TileImage;
-import org.qiibeta.bitmapview.utility.ImageHeaderParser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,24 +19,21 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.qiibeta.bitmapview.OrientationInfoUtility.ORIENTATION_ROTATE_0;
-import static org.qiibeta.bitmapview.OrientationInfoUtility.ORIENTATION_ROTATE_180;
-import static org.qiibeta.bitmapview.OrientationInfoUtility.ORIENTATION_ROTATE_270;
-import static org.qiibeta.bitmapview.OrientationInfoUtility.ORIENTATION_ROTATE_90;
 
 public abstract class BitmapSource {
-    public static BitmapSource newInstance(Context context, Uri uri, int thumbnailOrientation, Bitmap thumbnailBitmap) {
+    public static BitmapSource newInstance(Context context, Uri uri, @OrientationInfoUtility.ORIENTATION_ROTATE int thumbnailOrientation, Bitmap thumbnailBitmap) {
         String scheme = uri.getScheme();
         if (ContentResolver.SCHEME_FILE.equals(scheme)) {
             return new FileSource(uri, thumbnailOrientation, thumbnailBitmap);
         } else {
             //todo
-            //read orientation info need to create byte array object, not support GIF
+            //read orientation info need to create byte array object
             return new InputStreamSource(context.getApplicationContext(), uri, thumbnailOrientation, thumbnailBitmap);
         }
     }
 
     public static BitmapSource newInstance(Context context, Uri uri, Bitmap thumbnailBitmap) {
-        return newInstance(context.getApplicationContext(), uri, 0, thumbnailBitmap);
+        return newInstance(context.getApplicationContext(), uri, ORIENTATION_ROTATE_0, thumbnailBitmap);
     }
 
     public static BitmapSource newInstance(Bitmap thumbnailBitmap) {
@@ -93,12 +88,23 @@ public abstract class BitmapSource {
         private Uri mUri;
         private int mThumbnailOrientation;
         private Bitmap mThumbnailBitmap;
+        private boolean mIsGif;
 
         private InputStreamSource(Context context, Uri uri, int thumbnailOrientation, Bitmap thumbnailBitmap) {
             this.mContext = context;
             this.mUri = uri;
             this.mThumbnailOrientation = thumbnailOrientation;
             this.mThumbnailBitmap = thumbnailBitmap;
+
+            InputStream inputStream = getInputStream();
+            if (ImageFormatUtility.isGif(inputStream) && inputStream != null) {
+                try {
+                    this.mIsGif = inputStream.available() <= 4 * 1024 * 1024;//only support 4mb gif
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            closeSilently(inputStream);
         }
 
         public Uri getUri() {
@@ -106,7 +112,14 @@ public abstract class BitmapSource {
         }
 
         public AppImage getBitmapImage() {
-            return BitmapImage.newInstance(mThumbnailOrientation, mThumbnailBitmap);
+            if (mIsGif) {
+                InputStream inputStream = getInputStream();
+                AppImage image = GifImage.newInstance(mThumbnailBitmap, inputStream);
+                closeSilently(inputStream);
+                return image;
+            } else {
+                return BitmapImage.newInstance(mThumbnailOrientation, mThumbnailBitmap);
+            }
         }
 
         private InputStream getInputStream() {
@@ -132,27 +145,8 @@ public abstract class BitmapSource {
                 try {
                     BitmapRegionDecoder bitmapRegionDecoder = BitmapRegionDecoder.newInstance(inputStream, false);
                     closeSilently(inputStream);
-
                     inputStream = getInputStream();
-                    ImageHeaderParser parser = new ImageHeaderParser(inputStream);
-                    int orientation = parser.getOrientation();
-                    switch (orientation) {
-                        case ExifInterface.ORIENTATION_NORMAL:
-                            orientation = ORIENTATION_ROTATE_0;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_90:
-                            orientation = ORIENTATION_ROTATE_90;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_180:
-                            orientation = ORIENTATION_ROTATE_180;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_270:
-                            orientation = ORIENTATION_ROTATE_270;
-                            break;
-                        default:
-                            orientation = ORIENTATION_ROTATE_0;
-                            break;
-                    }
+                    int orientation = OrientationInfoUtility.getOrientation(inputStream);
                     closeSilently(inputStream);
                     return TileImage.newInstance(width, height, orientation, bitmapRegionDecoder);
                 } catch (IOException e) {
