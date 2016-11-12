@@ -20,17 +20,19 @@ public class OrientationInfoUtility {
     public static final int ORIENTATION_ROTATE_180 = 180;
     public static final int ORIENTATION_ROTATE_270 = 270;
 
+
+    @ORIENTATION_ROTATE
     static int getOrientation(String filePath) {
-        int orientationInt = 0;
+        int orientationInt = ORIENTATION_ROTATE_0;
         try {
             ExifInterface exif = new ExifInterface(filePath);
             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
             if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
-                orientationInt = 90;
+                orientationInt = ORIENTATION_ROTATE_90;
             } else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
-                orientationInt = 180;
+                orientationInt = ORIENTATION_ROTATE_180;
             } else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
-                orientationInt = 270;
+                orientationInt = ORIENTATION_ROTATE_270;
             }
         } catch (IOException e) {
             e.printStackTrace();

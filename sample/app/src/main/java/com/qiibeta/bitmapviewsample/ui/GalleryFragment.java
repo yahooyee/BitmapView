@@ -1,6 +1,7 @@
 package com.qiibeta.bitmapviewsample.ui;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -166,7 +167,11 @@ public class GalleryFragment extends BaseFragment {
                 public void onSuccess(final Uri uri, final BitmapMRC bitmap, boolean timeConsumingUnder15ms) {
                     if (uri.equals(imageView.getTag())) {
                         bitmap.retain();
-                        imageView.setBitmapSource(BitmapSource.newInstance(uri, bitmap.getBitmap()));
+                        Activity activity = getActivity();
+                        if (activity == null) {
+                            return;
+                        }
+                        imageView.setBitmapSource(BitmapSource.newInstance(activity, uri, bitmap.getBitmap()));
                     }
                 }
 

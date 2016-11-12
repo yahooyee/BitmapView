@@ -17,46 +17,12 @@ import org.qiibeta.bitmapview.OrientationInfoUtility;
 import org.qiibeta.bitmapview.utility.DimenUtility;
 import org.qiibeta.bitmapview.utility.MatrixUtility;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TileImage extends AppImage {
-    public static TileImage newInstance(@OrientationInfoUtility.ORIENTATION_ROTATE int orientation, InputStream inputStream) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(inputStream, null, options);
-        int width = options.outWidth;
-        int height = options.outHeight;
-
-        try {
-            BitmapRegionDecoder bitmapRegionDecoder = BitmapRegionDecoder.newInstance(inputStream, false);
-            return newInstance(width, height, orientation, bitmapRegionDecoder);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static TileImage newInstance(@OrientationInfoUtility.ORIENTATION_ROTATE int orientation, String path) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, options);
-        int width = options.outWidth;
-        int height = options.outHeight;
-
-        try {
-            BitmapRegionDecoder bitmapRegionDecoder = BitmapRegionDecoder.newInstance(path, false);
-            return newInstance(width, height, orientation, bitmapRegionDecoder);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static TileImage newInstance(int width, int height, @OrientationInfoUtility.ORIENTATION_ROTATE int orientation,
                                         BitmapRegionDecoder bitmapRegionDecoder) {
         TileImage image = new TileImage();

@@ -78,7 +78,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
             public void onSuccess(final Uri uri, final BitmapMRC bitmap, boolean timeConsumingUnder15ms) {
                 if (uri.equals(imageView.getTag())) {
                     bitmap.retain();
-                    imageView.setBitmapSource(BitmapSource.newInstance(uri, bitmap.getBitmap()));
+                    imageView.setBitmapSource(BitmapSource.newInstance(mActivity, uri, bitmap.getBitmap()));
                 }
             }
 
