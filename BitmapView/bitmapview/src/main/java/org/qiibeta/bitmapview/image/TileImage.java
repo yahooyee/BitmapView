@@ -13,6 +13,7 @@ import android.os.Build;
 import android.util.Log;
 import android.util.LruCache;
 
+import org.qiibeta.bitmapview.OrientationInfoUtility;
 import org.qiibeta.bitmapview.utility.DimenUtility;
 import org.qiibeta.bitmapview.utility.MatrixUtility;
 
@@ -24,39 +25,45 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TileImage extends AppImage {
-    public static TileImage newInstance(int orientation, InputStream inputStream) {
-        TileImage image = new TileImage();
-
+    public static TileImage newInstance(@OrientationInfoUtility.ORIENTATION_ROTATE int orientation, InputStream inputStream) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(inputStream, null, options);
-        image.mWidth = options.outWidth;
-        image.mHeight = options.outHeight;
-        image.mOrientation = orientation;
+        int width = options.outWidth;
+        int height = options.outHeight;
 
         try {
-            image.mBitmapRegionDecoder = BitmapRegionDecoder.newInstance(inputStream, false);
+            BitmapRegionDecoder bitmapRegionDecoder = BitmapRegionDecoder.newInstance(inputStream, false);
+            return newInstance(width, height, orientation, bitmapRegionDecoder);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return image;
+        return null;
     }
 
-    public static TileImage newInstance(int orientation, String path) {
-        TileImage image = new TileImage();
-
+    public static TileImage newInstance(@OrientationInfoUtility.ORIENTATION_ROTATE int orientation, String path) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(path, options);
-        image.mWidth = options.outWidth;
-        image.mHeight = options.outHeight;
-        image.mOrientation = orientation;
+        int width = options.outWidth;
+        int height = options.outHeight;
 
         try {
-            image.mBitmapRegionDecoder = BitmapRegionDecoder.newInstance(path, false);
+            BitmapRegionDecoder bitmapRegionDecoder = BitmapRegionDecoder.newInstance(path, false);
+            return newInstance(width, height, orientation, bitmapRegionDecoder);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    public static TileImage newInstance(int width, int height, @OrientationInfoUtility.ORIENTATION_ROTATE int orientation,
+                                        BitmapRegionDecoder bitmapRegionDecoder) {
+        TileImage image = new TileImage();
+        image.mWidth = width;
+        image.mHeight = height;
+        image.mOrientation = orientation;
+        image.mBitmapRegionDecoder = bitmapRegionDecoder;
         return image;
     }
 
