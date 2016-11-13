@@ -91,8 +91,8 @@ public class GestureBitmapView extends BitmapView {
 
     //最小和最大缩放值也是计算出来的,最小的BaseMatrix缩放值基础上*0.3f,最大BaseMatrix的缩放值*5
     @Override
-    protected void calculateMinAndMaxScale() {
-        super.calculateMinAndMaxScale();
+    protected void computeMinAndMaxScale() {
+        super.computeMinAndMaxScale();
         Matrix minBaseMatrix = getMinBaseMatrix();
         float fitCenterScaleValue = MatrixUtility.getScale(minBaseMatrix);
         mMinScale = MIN_SCALE_FACTOR * fitCenterScaleValue;

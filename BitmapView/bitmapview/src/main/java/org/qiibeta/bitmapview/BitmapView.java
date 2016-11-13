@@ -116,8 +116,8 @@ class BitmapView extends View implements AppImage.Callback {
         this.mThumbnailImageRect = new RectF(0, 0, mThumbnailImage.getWidth(), mThumbnailImage.getHeight());
 
         if (getWidth() != 0 && getHeight() != 0) {
-            calculateBaseMatrixArray();
-            calculateMinAndMaxScale();
+            computeBaseMatrixArray();
+            computeMinAndMaxScale();
         }
     }
 
@@ -132,7 +132,7 @@ class BitmapView extends View implements AppImage.Callback {
         this.mFull2ThumbnailMatrix.setRectToRect(this.mFullImageRect, this.mThumbnailImageRect, Matrix.ScaleToFit.CENTER);
         if (getWidth() != 0 && getHeight() != 0) {
             fixThumbnailImageFullMatrix();
-            calculateMinAndMaxScale();
+            computeMinAndMaxScale();
         }
         invalidate();
     }
@@ -161,7 +161,7 @@ class BitmapView extends View implements AppImage.Callback {
         }
     }
 
-    private void calculateBaseMatrixArray() {
+    private void computeBaseMatrixArray() {
         mBaseMatrixArray = MatrixUtility.calcBaseMatrix(getWidth(), getHeight(), this.mThumbnailImage.getWidth(), this.mThumbnailImage.getHeight());
         mBaseVerticalMatrixArray = MatrixUtility.calcVerticalBaseMatrix(getWidth(), getHeight(), this.mThumbnailImage.getWidth(), this.mThumbnailImage.getHeight());
 
@@ -178,7 +178,7 @@ class BitmapView extends View implements AppImage.Callback {
         this.mBaseVerticalMatrixArray[MatrixUtility.FULL_CENTER].postScale(thumbnail2FullScale, thumbnail2FullScale, this.mThumbnailImage.getWidth() / 2, this.mThumbnailImage.getHeight() / 2);
     }
 
-    protected void calculateMinAndMaxScale() {
+    protected void computeMinAndMaxScale() {
 
     }
 
@@ -210,13 +210,13 @@ class BitmapView extends View implements AppImage.Callback {
         this.mViewRect.set(0, 0, w, h);
 
         if (mThumbnailImage != null) {
-            calculateBaseMatrixArray();
-            calculateMinAndMaxScale();
+            computeBaseMatrixArray();
+            computeMinAndMaxScale();
         }
 
         if (mFullImage != null) {
             fixThumbnailImageFullMatrix();
-            calculateMinAndMaxScale();
+            computeMinAndMaxScale();
         }
     }
 

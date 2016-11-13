@@ -66,7 +66,7 @@ public class TileImage extends AppImage {
     private BitmapRegionDecoder mBitmapRegionDecoder;
     private Thread mThread = null;
     private LinkedBlockingQueue<Tile> mTaskQueue = new AppLinkedBlockingQueue();
-    private AppLruCache mCache = new AppLruCache(calculateLruCacheSize());
+    private AppLruCache mCache = new AppLruCache(computeLruCacheSize());
     //全局复用
     private static final Queue<Bitmap> sRecycledBitmapQueue = new LinkedList<>();//todo 这个要不要加限制数量?
     private volatile long mCurrentTaskTileKey;//有可能当前正在执行这个Tile任务,重复添加
@@ -96,7 +96,7 @@ public class TileImage extends AppImage {
     }
 
     //todo 算不对,很奇怪
-    private int calculateLruCacheSize() {
+    private int computeLruCacheSize() {
         int screenWidth = DimenUtility.getScreenWidth();
         int screenHeight = DimenUtility.getScreenHeight();
 
