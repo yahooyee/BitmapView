@@ -10,7 +10,7 @@ Android library, display any resolution JPG PNG pictures, support rotate gesture
 ## Gradle Dependency
 ```gradle
 dependencies {
-    compile 'org.qiibeta.views:bitmapview:1.0.1'
+    compile 'org.qiibeta.views:bitmapview:1.0.2'
 }
 ```
 ## Sample Application
@@ -38,7 +38,7 @@ public void onCreate(Bundle savedInstanceState) {
   String path=""; //the actual file path
   Bitmap thumbnailBitmap=null;
   GestureBitmapView bitmapView=(GestureBitmapView)findViewById(R.id.bv);
-  bitmapView.setBitmapSource(BitmapSource.newInstance(Uri.parse(path),thumbnailBitmap));
+  bitmapView.setBitmapSource(BitmapSource.newInstance(path,thumbnailBitmap));
 }
 ```
 
