@@ -23,6 +23,9 @@ import static org.qiibeta.bitmapview.OrientationInfoUtility.ORIENTATION_ROTATE_0
 public abstract class BitmapSource {
     public static BitmapSource newInstance(Context context, Uri uri, @OrientationInfoUtility.ORIENTATION_ROTATE int thumbnailOrientation, Bitmap thumbnailBitmap) {
         String scheme = uri.getScheme();
+        if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
+            throw new IllegalArgumentException("BitmapView cant open network url");
+        }
         if (ContentResolver.SCHEME_FILE.equals(scheme)) {
             return new FileSource(uri, thumbnailOrientation, thumbnailBitmap);
         } else {
