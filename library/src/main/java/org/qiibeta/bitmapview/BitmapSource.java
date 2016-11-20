@@ -144,6 +144,11 @@ public abstract class BitmapSource {
                 closeSilently(inputStream);
                 int width = options.outWidth;
                 int height = options.outHeight;
+
+                if (width <= 0 || height <= 0) {
+                    return null;
+                }
+
                 inputStream = getInputStream();
                 try {
                     BitmapRegionDecoder bitmapRegionDecoder = BitmapRegionDecoder.newInstance(inputStream, false);
@@ -197,6 +202,10 @@ public abstract class BitmapSource {
             BitmapFactory.decodeFile(this.mFilePath, options);
             int width = options.outWidth;
             int height = options.outHeight;
+
+            if (width <= 0 || height <= 0) {
+                return null;
+            }
 
             try {
                 BitmapRegionDecoder bitmapRegionDecoder = BitmapRegionDecoder.newInstance(this.mFilePath, false);
