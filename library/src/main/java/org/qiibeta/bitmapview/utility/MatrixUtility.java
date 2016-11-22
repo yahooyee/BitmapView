@@ -225,11 +225,11 @@ public class MatrixUtility {
     }
 
     public static Animator getMatrix2MatrixAnimator(final Matrix src, final Matrix dst, final AnimatorCallback callback) {
-        final ValueAnimator anim=ValueAnimator.ofObject(new MatrixEvaluator(),src,dst);
+        final ValueAnimator anim = ValueAnimator.ofObject(new MatrixEvaluator(), new Matrix(src), new Matrix(dst));
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                Matrix matrix=(Matrix)animation.getAnimatedValue();
+                Matrix matrix = (Matrix) animation.getAnimatedValue();
                 callback.onAnimate(matrix);
             }
         });

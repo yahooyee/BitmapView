@@ -9,12 +9,12 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.OverScroller;
 
 import org.qiibeta.bitmapview.gesture.AppGestureDetector;
 import org.qiibeta.bitmapview.utility.AppTimeAnimator;
 import org.qiibeta.bitmapview.utility.DimenUtility;
+import org.qiibeta.bitmapview.utility.LinearOutSlowInInterpolator;
 import org.qiibeta.bitmapview.utility.MatrixUtility;
 
 import static org.qiibeta.bitmapview.utility.MatrixUtility.getScale;
@@ -435,6 +435,7 @@ public class GestureBitmapView extends BitmapView {
                         }
                     });
             mSwitchBaseMatrixAnimator.setDuration(SWITCH_BASE_MATRIX_ANIMATION_DURATION);
+            mSwitchBaseMatrixAnimator.setInterpolator(new LinearOutSlowInInterpolator());
             mSwitchBaseMatrixAnimator.start();
             return true;
         }
@@ -627,7 +628,7 @@ public class GestureBitmapView extends BitmapView {
                         mRestoreAnimator = null;
                     }
                 });
-        mRestoreAnimator.setInterpolator(new DecelerateInterpolator());
+        mRestoreAnimator.setInterpolator(new LinearOutSlowInInterpolator());
         mRestoreAnimator.setDuration(RESTORING_ANIMATION_DURATION);
         mRestoreAnimator.start();
     }
