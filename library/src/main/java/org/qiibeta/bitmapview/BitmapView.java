@@ -81,7 +81,7 @@ class BitmapView extends View implements AppImage.Callback {
     public void setBitmapSource(BitmapSource source) {
         this.mImageBackgroundRect = null;
 
-        if (source != null && source.getUri().equals(mUri)) {
+        if (source != null && mUri != null && source.getUri().equals(mUri)) {
             return;
         }
 
